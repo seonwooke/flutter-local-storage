@@ -1,16 +1,3 @@
-# flutter_local_storage
+# 로컬 스토리지 (Hive, shared_preference, SQLite)
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+로컬 스토리지에 대한 예제를 공부해보는 코드이다. 유의할 점은 branch 별로 패키지를 나누었기 때문에 master branch가 아닌 다른 branch들을 선택해서 살펴보야아 한다.
