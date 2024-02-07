@@ -17,21 +17,24 @@ class PersonModelAdapter extends TypeAdapter<PersonModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PersonModel(
-      name: fields[0] as String,
-      age: fields[1] as int,
-      attend: fields[2] as bool,
+      id: fields[0] as int,
+      name: fields[1] as String,
+      age: fields[2] as int,
+      attend: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, PersonModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.age)
+      ..write(obj.name)
       ..writeByte(2)
+      ..write(obj.age)
+      ..writeByte(3)
       ..write(obj.attend);
   }
 

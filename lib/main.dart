@@ -7,7 +7,7 @@ import 'person_model.dart';
 Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(PersonModelAdapter());
-  await Hive.openBox('myBox');
+  await Hive.openBox<PersonModel>('AttendanceBook');
 
   runApp(ExampleView());
 }
