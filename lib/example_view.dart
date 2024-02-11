@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'person_model.dart';
 
-class ExampleView extends StatelessWidget {
-  ExampleView({super.key});
+class ExampleView extends StatefulWidget {
+  const ExampleView({super.key});
+
+  @override
+  State<ExampleView> createState() => _ExampleViewState();
+}
+
+class _ExampleViewState extends State<ExampleView> {
   final nameController = TextEditingController();
+  late SharedPreferences sp;
+  int studentCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    sp = await SharedPreferences.getInstance();
+    int lastId = sp.getInt('last_id') ?? 0;
+    setState(() {
+      studentCount = lastId;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +80,23 @@ class ExampleView extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    /* Hive 이용 구간 */
-                    // int id = 0;
-                    // if (box.isNotEmpty) {
-                    //   final prevStudent = box.getAt(box.length - 1);
-                    //   if (prevStudent != null) {
-                    //     id = prevStudent.id + 1;
-                    //   }
-                    // }
-                    // box.put(id, PersonModel(id: id, name: nameController.text));
+                  onPressed: () async {
+                    /* shared_preferences 이용 구간 */
+                    int id = sp.getInt('last_id') ?? 0;
+                    PersonModel personModel = PersonModel(
+                      id: id,
+                      name: nameController.text,
+                      age: 20,
+                      attend: false,
+                    );
+                    sp.setString(id.toString(), personModel.toJson());
+                    id += 1;
+                    sp.setInt('last_id', id);
                     nameController.clear();
-                    debugPrint('[SUCCESS] 학생 추가');
+                    debugPrint('[SUCCESS] 학생 추가 : ${id - 1}번 학생');
+                    setState(() {
+                      studentCount = id;
+                    });
                   },
                   style: ButtonStyle(
                     backgroundColor:
@@ -91,27 +119,32 @@ class ExampleView extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10,
+              itemCount: studentCount,
               itemBuilder: (_, index) {
-                /* Hive 이용 구간 */
-                // final student = box.getAt(index);
-                // if (student == null) {
-                //   return const Center(child: Text('학생이 없습니다'));
-                // } else {
-                //   return _studentBlock(
-                //     student,
-                //     () {
-                //       if (!student.attend) {
-                //         final newModel = PersonModel(
-                //           id: student.id,
-                //           name: student.name,
-                //           attend: true,
-                //         );
-                //         box.put(student.id, newModel);
-                //       }
-                //     },
-                //   );
-                // }
+                /* shared_preferences 이용 구간 */
+                String? studentJson = sp.getString(index.toString());
+                if (studentJson == null) {
+                  return const Center(child: Text('학생이 없습니다'));
+                } else {
+                  PersonModel student = PersonModel.fromJson(studentJson);
+                  return _studentBlock(
+                    student,
+                    () {
+                      setState(() {
+                        if (!student.attend) {
+                          final newModel = PersonModel(
+                            id: student.id,
+                            name: student.name,
+                            age: student.age,
+                            attend: true,
+                          );
+                          sp.setString(
+                              student.id.toString(), newModel.toJson());
+                        }
+                      });
+                    },
+                  );
+                }
               },
             ),
           ],
