@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
-class ExampleView extends StatelessWidget {
-  ExampleView({super.key});
+class ExampleView extends StatefulWidget {
+  const ExampleView({super.key});
 
+  @override
+  State<ExampleView> createState() => _ExampleViewState();
+}
+
+class _ExampleViewState extends State<ExampleView> {
   final box = Hive.box('myBox');
+  late Database sqfliteDb;
+
+  @override
+  void initState() {
+    initSqflite();
+    super.initState();
+  }
+
+  Future initSqflite() async {
+    sqfliteDb = await openDatabase('sqflite_db.db');
+    await sqfliteDb.execute(
+      'CREATE TABLE IF NOT EXISTS SqfliteDb '
+      '(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, age INT)',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,40 +178,6 @@ class ExampleView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 30),
-
-          /// SQLite
-          const Text(
-            'SQLite',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _sampleButton(
-                '데이터 추가',
-                () {},
-              ),
-              _sampleButton(
-                '데이터 읽기',
-                () {},
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _sampleButton(
-                '데이터 수정',
-                () {},
-              ),
-              _sampleButton(
-                '데이터 삭제',
-                () {},
-              ),
-            ],
-          ),
         ],
       ),
     );
